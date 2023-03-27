@@ -1,12 +1,19 @@
-using Codec.Robot.Application;
+
 using System;
 using Xunit;
 using TestRobot = Codec.Robot.Application.Robot;
 
 namespace Codec.Robot.Tests
 {
+    [Collection(nameof(RobotCollection))]
     public class RobotTests
     {
+        private readonly RobotTestFixture _robotTestFixture;
+
+        public RobotTests(RobotTestFixture robotTestFixture)
+        {
+            _robotTestFixture = robotTestFixture;
+        }
 
         [Fact(DisplayName = "CreatePlateauBadArguments")]
         public void CreatePlateauBadArguments()
@@ -14,14 +21,14 @@ namespace Codec.Robot.Tests
             //arrange
             //act
             //assert
-            Assert.Throws<ArgumentException>(() => new Plateau(0, 0));
+            Assert.Throws<ArgumentException>(() => _robotTestFixture.CreateInvalidPlateau());
         }
 
         [Fact(DisplayName = "CreatePlateauCorrectArguments")]
         public void CreatePlateauCorrectArguments()
         {
             //arrange
-            var plateau = new Plateau(5, 5);
+            var plateau = _robotTestFixture.Create5x5PLateau();
             //act
             //assert
             Assert.True(plateau.Z > 0);
@@ -31,8 +38,7 @@ namespace Codec.Robot.Tests
         public void RobotStartPosition()
         {
             //arrange
-            var plateau = new Plateau(5, 5);
-            var robot = new TestRobot(plateau);
+            var robot = _robotTestFixture.CreateRobot();
             //act
             //assert
             Assert.Equal("1,1,North", robot.GetCurrentPositionString());
@@ -42,8 +48,7 @@ namespace Codec.Robot.Tests
         public void RobotTurnLeft()
         {
             //arrange
-            var plateau = new Plateau(5, 5);
-            var robot = new TestRobot(plateau);
+            var robot = _robotTestFixture.CreateRobot();
             //act
             robot.TurnLeft();
             //assert
@@ -54,8 +59,7 @@ namespace Codec.Robot.Tests
         public void RobotTurnRight()
         {
             //arrange
-            var plateau = new Plateau(5, 5);
-            var robot = new TestRobot(plateau);
+            var robot = _robotTestFixture.CreateRobot();
             //act
             robot.TurnRight();
             //assert
@@ -66,8 +70,7 @@ namespace Codec.Robot.Tests
         public void MoveForward()
         {
             //arrange
-            var plateau = new Plateau(5, 5);
-            var robot = new TestRobot(plateau);
+            var robot = _robotTestFixture.CreateRobot();
             //act
             robot.MoveForward();
             //assert
@@ -78,8 +81,7 @@ namespace Codec.Robot.Tests
         public void RobotMoveForwardTwiceTurnLeftOnceMoveForwarOnce()
         {
             //arrange
-            var plateau = new Plateau(5, 5);
-            var robot = new TestRobot(plateau);
+            var robot = _robotTestFixture.CreateRobot();
             //act
             robot.MoveForward();
             robot.MoveForward();
@@ -94,8 +96,7 @@ namespace Codec.Robot.Tests
         public void RobotMoveByCommand()
         {
             //arrange
-            var plateau = new Plateau(5, 5);
-            var robot = new TestRobot(plateau);
+            var robot = _robotTestFixture.CreateRobot();
             //act
             robot.ExecuteCommandString("FFRFLFLF");
             //assert
@@ -106,8 +107,7 @@ namespace Codec.Robot.Tests
         public void RobotMoveByCommandLimits()
         {
             //arrange
-            var plateau = new Plateau(5, 5);
-            var robot = new TestRobot(plateau);
+            var robot = _robotTestFixture.CreateRobot();
             //act
             robot.ExecuteCommandString("FFFFFRFFRFFFRFFF");
             //assert
@@ -118,12 +118,12 @@ namespace Codec.Robot.Tests
         public void RobotMoveByCommandLimits2()
         {
             //arrange
-            var plateau = new Plateau(5, 5);
-            var robot = new TestRobot(plateau);
+            var robot = _robotTestFixture.CreateRobot();
             //act
             robot.ExecuteCommandString("RFFFFFFFFFFLFFFFFFLFL");
             //assert
             Assert.Equal("4,5,South", robot.GetCurrentPositionString());
         }
+
     }
 }
